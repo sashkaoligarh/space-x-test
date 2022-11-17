@@ -3,24 +3,38 @@ import { launchesService, rocketService, launchpadService } from '../api';
 import { useQueryParam, StringParam } from 'use-query-params';
 
 interface LaunchesContextInterface {
-  launches:any[];
-  launchData:any;
-  fetchData:any;
+  launches:LaunchItem[];
+  launchData:LaunchPaginationType;
+  fetchData:(() => void);
   rockets:any[];
   onRocketSelect:(value:string) => void;
   rocketId:string;
-  launchpads:any
+  launchpads:any[]
   onStatusSelect:(value:string) => void;
   onLaunchpadSelect:(value:string) => void;
   launchpadId:string;
   status:string;
   loading:boolean;
-  selectedItem:any
-  setSelectedItem:(item:any) => void;
+  selectedItem:LaunchItem
+  setSelectedItem:(item:LaunchItem) => void;
+}
+export type LaunchItem = {
+  videoUrl:string,
+  videoId:string,
+  id:string,
+  name:string,
+  image:string,
+  date:number,
+  details:string,
+  rocketName:string
+}
+export type LaunchPaginationType = {
+  hasNextPage:boolean,
+  page:number,
+  limit:number,
+  nextPage:number,
 }
 const LaunchesContext = createContext<Partial<LaunchesContextInterface>>({});
-
-
 
 const LaunchesProvider = (props:any) => {
   const [launches, setLaunches] = useState<any>([])
@@ -37,13 +51,12 @@ const LaunchesProvider = (props:any) => {
   useEffect(() => {
     launchpadService.getList()
     .then((res) => {
-
-      setLaunchpads(res.data)
+      setLaunchpads(res)
     })
     .catch((e) => console.log('err', e))
     rocketService.getList()
     .then((res) => {
-      setRockets(res.data)
+      setRockets(res)
     })
     .catch((e) => console.log('err', e))
   },[])
@@ -61,13 +74,8 @@ const LaunchesProvider = (props:any) => {
     page: 1, 
     query})
     .then((res) => {
-      setLaunches(res.data.docs)
-      setLaunchData({
-        hasNextPage:res.data.hasNextPage,
-        page:res.data.page,
-        limit:res.data.limit,
-        nextPage:res.data.nextPage,
-      })
+      setLaunches(res.docs)
+      setLaunchData(res.paginationData)
       setLoading(false)
     })
     .catch((err) => {
@@ -88,14 +96,9 @@ const LaunchesProvider = (props:any) => {
       query})
     .then((res) => {
       setLaunches((old:any) => {
-        return [...old, ...res.data.docs]
+        return [...old, ...res.docs]
       })
-      setLaunchData({
-        hasNextPage:res.data.hasNextPage,
-        page:res.data.page,
-        limit:res.data.limit,
-        nextPage:res.data.nextPage,
-      })
+      setLaunchData(res.paginationData)
     })
     .catch((err) => {
       console.log('err', err);

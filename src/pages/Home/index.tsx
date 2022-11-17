@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { FC, useState } from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import { useLaunches } from '../../context/launch.context';
+import { LaunchItem, useLaunches } from '../../context/launch.context';
 import { LaunchCard, InfoDialog } from './components';
-import {Container, LaunchesWrapper} from './styles'
-const Home = () => {
+import {Container, LaunchesWrapper, NoDataContainer} from './styles'
+
+const Home:FC = () => {
   const [isOpenInfo, setIsOpenInfo] = useState(false)
   const {
     launches,
@@ -11,7 +12,7 @@ const Home = () => {
     fetchData,
     loading,
   } = useLaunches()
-  
+  if(launches.length === 0) return <NoDataContainer><h1>No launches found</h1></NoDataContainer>
   return ( 
     <Container>
       <InfiniteScroll
@@ -19,23 +20,12 @@ const Home = () => {
         next={fetchData}
         hasMore={launchData.hasNextPage}
         loader={<h4>Loading...</h4>}
-        endMessage={
-          launches.length > 0 ?
-            <p style={{ textAlign: 'center' }}>
-              <b>Yay! You have seen it all</b>
-            </p>
-          :
-            null
-        }
       >
       <LaunchesWrapper>
         {loading ? <div>Loading</div> :
-          launches.length > 0 ?
-            launches.map((item:any) => (
-              <LaunchCard setIsOpenInfo={setIsOpenInfo} key={item.id} item={item}/>
-            ))
-          :
-            <h3>No data</h3>
+          launches.map((item:LaunchItem) => (
+            <LaunchCard setIsOpenInfo={setIsOpenInfo} key={item.id} item={item}/>
+          ))
         }
       </LaunchesWrapper>
     </InfiniteScroll>

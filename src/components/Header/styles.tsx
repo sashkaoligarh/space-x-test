@@ -2,13 +2,14 @@ import styled from 'styled-components';
 
 export const Container = styled.div`
   display: flex;
-  padding: 20px;
-  margin: 20px;
-  justify-content: space-between;
+  width: 100%;
+  justify-content: center;
+
 `
 export const RightWrappper = styled.div`
   display: flex;
-  width: 70%;
+  margin-left: 120px;
+  flex-wrap: wrap;
 `
 export const FilterWrapper = styled.div`
   display: flex;
@@ -26,6 +27,9 @@ export const Select = styled.select`
   &:hover{
     cursor: pointer;
   }
+`
+export const FilterTitle = styled.h3`
+  font-weight: bold;
 `
 
 export const MainTitle = styled.h1`

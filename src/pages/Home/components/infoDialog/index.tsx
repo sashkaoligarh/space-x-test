@@ -8,12 +8,15 @@ import {
 } from './styles'
 import ReactPlayer from 'react-player'
 import { timeConverter } from '../../../../functions';
+import NoVideo from './noVideo.svg'
+
 type DialogProps = {
   isOpenInfo:boolean,
   setIsOpenInfo:(status:boolean) => void,
   item?:any
 }
-const noVideoUrl = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZtZYmZDYW9tG9H4O5j_YuEnbAcZvGNynY5xH0vTu_qPJOshGuU5WDTThs2ABx8CC1-oE&usqp=CAU'
+
+
 const InfoDialog:FC<DialogProps> = ({ isOpenInfo, setIsOpenInfo, item }) => {
   const [playing, setPlaying] = useState<boolean>(false)
   const {selectedItem} = useLaunches()
@@ -25,23 +28,23 @@ const InfoDialog:FC<DialogProps> = ({ isOpenInfo, setIsOpenInfo, item }) => {
     <StyledDialog open={isOpenInfo}>
       <BodyDialog>
         <div style={{ display: "flex", justifyContent:'flex-end' }}>
-            <CloseButton onClick={handleCloseButton}>X</CloseButton>
+            <CloseButton onClick={handleCloseButton}>x</CloseButton>
         </div>
-        {selectedItem?.links.webcast ?
+        {selectedItem?.videoUrl ?
 
           <ReactPlayer
             controls={true}
             playing={playing}
             onPlay={() => setPlaying(true)}
-            url={selectedItem?.links.webcast}
+            url={selectedItem?.videoUrl}
             width={'100%'}
-            height={'100%'}
+            height={'calc(100vh - 150px)'}
           />
         :
-          <CardImage title="no-video" src={noVideoUrl}/>
+          <CardImage title="no-video" src={NoVideo}/>
         }
-        <h4>{timeConverter(selectedItem?.date_unix)}</h4>
-        <h3>{selectedItem?.rocket.name}</h3>
+        <h4>{timeConverter(selectedItem?.date)}</h4>
+        <h3>{selectedItem?.rocketName}</h3>
         <h2>{selectedItem?.name}</h2>
         <p>{selectedItem?.details}</p>
 
